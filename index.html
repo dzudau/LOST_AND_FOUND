@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lost & Found — Бюро находок</title>
+<style>
+:root{--bg:#f7f8fa;--card:#fff;--text:#20242b;--muted:#737b88;--line:#e5e8ed;--accent:#303b50;--soft:#edf0f5}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:15px/1.5 Inter,Arial,sans-serif}
+button,input,select,textarea{font:inherit}button{cursor:pointer}
+.wrap{max-width:1100px;margin:auto;padding:22px}
+header{display:flex;align-items:center;justify-content:space-between;gap:15px;margin-bottom:22px}
+.brand{display:flex;gap:11px;align-items:center}.logo{width:40px;height:40px;border-radius:12px;background:var(--accent);color:white;display:grid;place-items:center;font-weight:800;font-size:20px}
+.brand strong{font-size:19px;letter-spacing:-.5px}.brand small{display:block;color:var(--muted);font-size:12px}
+.btn{border:1px solid var(--line);background:white;color:var(--text);padding:10px 14px;border-radius:10px;font-weight:600;font-size:13px}
+.btn.primary{background:var(--accent);color:white;border-color:var(--accent)}
+.hero{padding:30px;border-radius:18px;background:#eef1f5;border:1px solid var(--line);margin-bottom:15px}
+.eyebrow{font-size:11px;letter-spacing:2px;color:var(--muted);font-weight:700}.hero h1{font-size:clamp(27px,5vw,40px);line-height:1.15;letter-spacing:-1.4px;margin:13px 0}.hero p{color:var(--muted);max-width:480px}
+.actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:20px}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:15px 0 25px}.stat,.panel{background:var(--card);border:1px solid var(--line);border-radius:13px;padding:14px}.stat b{font-size:23px;display:block}.stat span{font-size:12px;color:var(--muted)}
+.layout{display:grid;grid-template-columns:175px 1fr;gap:22px}.sidebar{display:flex;flex-direction:column;gap:4px}.side-title{font-size:11px;color:var(--muted);font-weight:700;padding:7px 11px}.nav{border:0;background:transparent;text-align:left;padding:11px;border-radius:9px;color:var(--text);font-size:13px}.nav.active{background:#e9edf3;font-weight:700}
+.content-head{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:15px}.content-head h2{font-size:20px;margin:0}.muted{color:var(--muted);font-size:12px}
+.filters{display:flex;gap:8px;margin:12px 0}.field{width:100%;border:1px solid var(--line);background:white;border-radius:9px;padding:11px 12px;color:var(--text);outline:none;font-size:13px}.field:focus{border-color:#8794a8}
+.searchrow{display:flex;gap:8px}.searchrow select{max-width:180px}.tabs{display:flex;gap:5px;flex-wrap:wrap;margin:12px 0 16px}.tab{border:0;background:transparent;padding:8px 12px;border-radius:8px;font-size:13px}.tab.active{background:#e9edf3;font-weight:700}
+.items{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}.item{background:white;border:1px solid var(--line);border-radius:13px;overflow:hidden;cursor:pointer;transition:.15s}.item:hover{transform:translateY(-2px)}.photo{height:145px;background:#f0f2f5;display:grid;place-items:center;font-size:53px;position:relative}.status{position:absolute;top:10px;left:10px;font-size:10px;font-weight:700;padding:5px 8px;border-radius:20px;background:#eee}.lost{background:#fff1ce;color:#9a6710}.found{background:#dcf6e9;color:#16764f}.returned{background:#e8ebef;color:#586273}.heart{position:absolute;right:10px;top:8px;border:0;background:transparent;font-size:20px;color:#9b6570}.item-info{padding:12px}.item-info h3{font-size:14px;margin:4px 0 8px}.item-info p{font-size:11px;color:var(--muted);margin:4px 0}
+.empty{text-align:center;padding:40px 10px;color:var(--muted)}.bottom{margin-top:25px;display:flex;justify-content:space-between;align-items:center;gap:12px}
+.overlay{position:fixed;inset:0;background:#0008;display:flex;align-items:center;justify-content:center;padding:15px;z-index:5}.hidden{display:none!important}.modal{background:white;border-radius:17px;padding:21px;width:100%;max-width:470px;max-height:90vh;overflow:auto}.modal-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:15px}.modal h2{font-size:19px;margin:0}.form{display:grid;gap:12px}.form label{font-size:12px;font-weight:700;display:block;margin-bottom:5px}.form textarea{resize:vertical}.form .btn{width:100%;margin-top:4px}.detail-photo{font-size:65px;text-align:center;padding:28px;background:#f0f2f5;border-radius:12px}.detail-meta{padding:13px;border:1px solid var(--line);border-radius:11px;margin:14px 0;font-size:13px}.detail-meta div+div{margin-top:8px}
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#20242b;color:white;padding:11px 17px;border-radius:10px;z-index:10;font-size:13px;box-shadow:0 5px 25px #0003}
+footer{color:var(--muted);font-size:11px;text-align:center;margin:25px 0 5px}
+@media(max-width:760px){.layout{grid-template-columns:1fr}.sidebar{display:grid;grid-template-columns:repeat(2,1fr)}.side-title{grid-column:1/-1}.items{grid-template-columns:repeat(2,minmax(0,1fr))}.wrap{padding:15px}.hero{padding:23px}.photo{height:125px}}
+@media(max-width:430px){.items{gap:8px}.item-info{padding:9px}.searchrow{flex-direction:column}.searchrow select{max-width:none}.brand strong{font-size:17px}header>.btn{padding:9px;font-size:11px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+ <div class="brand"><div class="logo">L</div><div><strong>lost&amp;found</strong><small>Бюро находок</small></div></div>
+ <button class="btn primary" id="newTop">＋ Подать объявление</button>
+</header>
+<section class="hero">
+ <div class="eyebrow">БЮРО НАХОДОК</div>
+ <h1>Каждая вещь должна<br>найти своего владельца.</h1>
+ <p>Потеряли что-то важное или нашли чужую вещь? Поможем вернуть её домой.</p>
+ <div class="actions"><button class="btn primary" id="lostHero">Я потерял вещь</button><button class="btn" id="foundHero">Я нашёл вещь</button></div>
+</section>
+<div class="stats">
+ <div class="stat"><b id="statAll">8</b><span>Объявлений</span></div><div class="stat"><b id="statLost">4</b><span>Потеряно</span></div><div class="stat"><b id="statReturned">2</b><span>Возвращено</span></div>
+</div>
+<div class="layout">
+<aside class="sidebar">
+ <div class="side-title">МЕНЮ</div>
+ <button class="nav active" data-page="all">⌕ Все объявления</button><button class="nav" data-page="lost">◉ Потерянные</button><button class="nav" data-page="found">◇ Найденные</button><button class="nav" data-page="favorites">♡ Избранное</button><button class="nav" data-page="returned">✓ Возвращённые</button>
+ <div class="side-title">ПРОЕКТ</div><div class="muted" style="padding:0 11px">Демонстрационная версия · 2026</div>
+</aside>
+<main>
+ <div class="content-head"><div><h2 id="pageTitle">Все объявления</h2><div class="muted" id="resultCount">Последние публикации</div></div><button class="btn" id="sortBtn">Сначала новые ↓</button></div>
+ <div class="searchrow"><input class="field" id="search" placeholder="⌕ Поиск по названию или описанию..."><select class="field" id="category"><option value="">Все категории</option><option>Электроника</option><option>Документы</option><option>Аксессуары</option><option>Одежда</option><option>Другое</option></select></div>
+ <div class="tabs" id="filterTabs"><button class="tab active" data-filter="all">Все</button><button class="tab" data-filter="lost">Потеряно</button><button class="tab" data-filter="found">Найдено</button><button class="tab" data-filter="returned">Возвращено</button></div>
+ <div class="items" id="items"></div><div class="empty hidden" id="noResults">⌕<br><b>Ничего не найдено</b><p>Попробуйте изменить запрос или фильтры.</p></div>
+</main>
+</div>
+<div class="panel bottom"><div><b style="font-size:14px">Не нашли нужную вещь?</b><div class="muted">Разместите объявление — возможно, кто-то уже её видел.</div></div><button class="btn primary" id="newBottom">＋ Создать объявление</button></div>
+<footer>Lost &amp; Found · Учебный проект</footer>
+</div>
+<div class="overlay hidden" id="modal"><div class="modal"><div class="modal-head"><h2>Новое объявление</h2><button class="btn" id="closeModal">✕</button></div>
+<form class="form" id="postForm">
+ <div><label>Тип объявления</label><select class="field" id="fType"><option value="lost">Потерял вещь</option><option value="found">Нашёл вещь</option></select></div>
+ <div><label>Название вещи *</label><input class="field" id="fName" required maxlength="65" placeholder="Например, чёрный кошелёк"></div>
+ <div><label>Категория</label><select class="field" id="fCat"><option>Электроника</option><option>Документы</option><option>Аксессуары</option><option>Одежда</option><option>Другое</option></select></div>
+ <div><label>Описание *</label><textarea class="field" id="fDesc" rows="3" required maxlength="400" placeholder="Опишите предмет, его особенности..."></textarea></div>
+ <div><label>Место *</label><input class="field" id="fPlace" required maxlength="100" placeholder="Например, школа, кабинет 204"></div>
+ <div><label>Дата</label><input class="field" id="fDate" type="date"></div>
+ <div><label>Контакт (необязательно)</label><input class="field" id="fContact" maxlength="100" placeholder="Telegram или телефон"></div>
+ <div><label>Эмодзи предмета</label><select class="field" id="fEmoji"><option>🎒</option><option>📱</option><option>👛</option><option>🔑</option><option>📚</option><option>🎧</option><option>🪪</option><option>🧥</option><option>💍</option><option>🕶️</option><option>📦</option></select></div>
+ <button class="btn primary" type="submit">Опубликовать объявление</button>
+</form></div></div>
+<div class="overlay hidden" id="detail"><div class="modal"><div class="modal-head"><span class="muted">ИНФОРМАЦИЯ ОБ ОБЪЯВЛЕНИИ</span><button class="btn" id="closeDetail">✕</button></div><div id="detailContent"></div></div></div>
+<div class="toast hidden" id="toast"></div>
+<script>
+(()=>{
+const $=id=>document.getElementById(id),today=new Date().toISOString().slice(0,10);
+let records=[
+{id:1,type:'lost',name:'Чёрный рюкзак Nike',cat:'Аксессуары',desc:'Чёрный спортивный рюкзак Nike. Внутри могут быть учебники и тетради.',place:'Школа, 2 этаж',date:'2026-11-25',contact:'@student',emoji:'🎒'},
+{id:2,type:'found',name:'Беспроводные наушники',cat:'Электроника',desc:'Белые беспроводные наушники в небольшом футляре.',place:'Библиотека',date:'2026-11-25',contact:'@helper',emoji:'🎧'},
+{id:3,type:'lost',name:'Студенческий пропуск',cat:'Документы',desc:'Пластиковая карта с фотографией. Потерял около входа.',place:'Главный вход',date:'2026-11-24',contact:'@alex',emoji:'🪪'},
+{id:4,type:'found',name:'Связка ключей',cat:'Другое',desc:'Нашёл связку из трёх ключей с металлическим брелоком.',place:'Спортивный зал',date:'2026-11-24',contact:'@finder',emoji:'🔑'},
+{id:5,type:'lost',name:'Серый кошелёк',cat:'Аксессуары',desc:'Небольшой серый кошелёк. Внутри были карты.',place:'Столовая',date:'2026-11-23',contact:'@user5',emoji:'👛'},
+{id:6,type:'returned',name:'Смартфон Samsung',cat:'Электроника',desc:'Телефон найден и уже возвращён владельцу.',place:'Коридор, 1 этаж',date:'2026-11-22',contact:'',emoji:'📱'},
+{id:7,type:'lost',name:'Синяя толстовка',cat:'Одежда',desc:'Синяя толстовка с капюшоном, размер M.',place:'Актовый зал',date:'2026-11-21',contact:'@user7',emoji:'🧥'},
+{id:8,type:'returned',name:'Учебник математики',cat:'Другое',desc:'Учебник был найден и передан своему владельцу.',place:'Кабинет 105',date:'2026-11-20',contact:'',emoji:'📚'}
+];
+let favorites=new Set(),page='all',filter='all',newest=true,active=null;
+const status={lost:'Потеряно',found:'Найдено',returned:'Возвращено'};
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const fmt=d=>{if(!d)return '';let [y,m,day]=d.split('-');return `${day}.${m}.${y}`};
+function toast(msg){$('toast').textContent=msg;$('toast').classList.remove('hidden');clearTimeout(window.lfTimer);window.lfTimer=setTimeout(()=>$('toast').classList.add('hidden'),2200)}
+function stats(){$('statAll').textContent=records.length;$('statLost').textContent=records.filter(x=>x.type==='lost').length;$('statReturned').textContent=records.filter(x=>x.type==='returned').length}
+function render(){
+ stats();let q=$('search').value.toLowerCase().trim(),cat=$('category').value;
+ let list=records.filter(x=>(page==='all'||page===x.type||(page==='favorites'&&favorites.has(x.id)))&&(filter==='all'||filter===x.type)&&(!cat||cat===x.cat)&&(!q||[x.name,x.desc,x.place,x.cat].join(' ').toLowerCase().includes(q)));
+ list.sort((a,b)=>newest?b.id-a.id:a.id-b.id);
+ $('items').innerHTML=list.map(x=>`<article class="item" data-open="${x.id}"><div class="photo">${esc(x.emoji)}<span class="status ${x.type}">${status[x.type]}</span><button class="heart" data-heart="${x.id}">${favorites.has(x.id)?'♥':'♡'}</button></div><div class="item-info"><div class="muted">${esc(x.cat)}</div><h3>${esc(x.name)}</h3><p>⌖ ${esc(x.place)}</p><p>◷ ${fmt(x.date)}</p></div></article>`).join('');
+ $('noResults').classList.toggle('hidden',list.length>0);$('resultCount').textContent=`Найдено объявлений: ${list.length}`;
+}
+function setPage(p){page=p;filter='all';$('pageTitle').textContent=({all:'Все объявления',lost:'Потерянные вещи',found:'Найденные вещи',favorites:'Избранное',returned:'Возвращённые вещи'})[p];document.querySelectorAll('.nav').forEach(b=>b.classList.toggle('active',b.dataset.page===p));document.querySelectorAll('[data-filter]').forEach(b=>b.classList.toggle('active',b.dataset.filter==='all'));render()}
+function openForm(type='lost'){$('postForm').reset();$('fType').value=type;$('fDate').value=today;$('modal').classList.remove('hidden')}
+function openDetail(id){
+ const x=records.find(r=>r.id===id);if(!x)return;active=id;
+ $('detailContent').innerHTML=`<div class="detail-photo">${esc(x.emoji)}</div><div style="margin-top:13px"><span class="status ${x.type}">${status[x.type]}</span> <span class="muted">${esc(x.cat)}</span></div><h2 style="margin:12px 0">${esc(x.name)}</h2><p class="muted" style="font-size:14px">${esc(x.desc)}</p><div class="detail-meta"><div>⌖ <b>Место:</b> ${esc(x.place)}</div><div>◷ <b>Дата:</b> ${fmt(x.date)}</div>${x.contact?`<div>✉ <b>Контакт:</b> ${esc(x.contact)}</div>`:''}</div><button class="btn" style="width:100%" id="detailFav">${favorites.has(id)?'♥ Убрать из избранного':'♡ Добавить в избранное'}</button>${x.type!=='returned'?'<button class="btn primary" style="width:100%;margin-top:8px" id="markReturned">✓ Отметить как возвращённое</button>':''}<button class="btn" style="width:100%;margin-top:8px" id="detailClose2">Закрыть</button>`;
+ $('detail').classList.remove('hidden');$('detailFav').onclick=()=>{favorites.has(id)?favorites.delete(id):favorites.add(id);openDetail(id);render()};
+ const mark=$('markReturned');if(mark)mark.onclick=()=>{x.type='returned';$('detail').classList.add('hidden');render();toast('Статус изменён: возвращено')};
+ $('detailClose2').onclick=()=>$('detail').classList.add('hidden');
+}
+document.querySelectorAll('.nav').forEach(b=>b.onclick=()=>setPage(b.dataset.page));
+document.querySelectorAll('[data-filter]').forEach(b=>b.onclick=()=>{filter=b.dataset.filter;document.querySelectorAll('[data-filter]').forEach(z=>z.classList.toggle('active',z===b));render()});
+$('search').oninput=render;$('category').onchange=render;
+$('sortBtn').onclick=()=>{newest=!newest;$('sortBtn').textContent=newest?'Сначала новые ↓':'Сначала старые ↑';render()};
+['newTop','newBottom'].forEach(id=>$(id).onclick=()=>openForm());
+$('lostHero').onclick=()=>openForm('lost');$('foundHero').onclick=()=>openForm('found');
+$('closeModal').onclick=()=>$('modal').classList.add('hidden');$('closeDetail').onclick=()=>$('detail').classList.add('hidden');
+$('modal').onclick=e=>{if(e.target===$('modal'))$('modal').classList.add('hidden')};$('detail').onclick=e=>{if(e.target===$('detail'))$('detail').classList.add('hidden')};
+$('items').onclick=e=>{let h=e.target.closest('[data-heart]');if(h){let id=+h.dataset.heart;favorites.has(id)?favorites.delete(id):favorites.add(id);render();return}let c=e.target.closest('[data-open]');if(c)openDetail(+c.dataset.open)};
+$('postForm').onsubmit=e=>{e.preventDefault();let x={id:Math.max(0,...records.map(r=>r.id))+1,type:$('fType').value,name:$('fName').value.trim(),cat:$('fCat').value,desc:$('fDesc').value.trim(),place:$('fPlace').value.trim(),date:$('fDate').value||today,contact:$('fContact').value.trim(),emoji:$('fEmoji').value};if(!x.name||!x.desc||!x.place)return;records.unshift(x);$('modal').classList.add('hidden');$('search').value='';$('category').value='';setPage('all');toast('Объявление опубликовано!')};
+render();
+})();
+</script>
+</body>
+</html>
